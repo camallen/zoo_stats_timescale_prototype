@@ -1,10 +1,10 @@
-class AddEventTable < ActiveRecord::Migration[5.1]
+class AddEventsHyperTable < ActiveRecord::Migration[5.1]
   def change
-    create_table :events do |t|
+    create_table :events, primary_key: %i[event_id event_source event_time] do |t|
       t.bigint    :event_id
       t.string    :event_type
       t.string    :event_source
-      t.timestamp :event_time
+      t.timestamp :event_time, null: false
       t.timestamp :event_created_at
       t.bigint    :project_id
       t.bigint    :workflow_id
@@ -27,6 +27,15 @@ class AddEventTable < ActiveRecord::Migration[5.1]
       t.string    :tags, default: [], array: true
       t.bigint    :user_zooniverse_id
       t.bigint    :zooniverse_id
+      t.timestamps
+    end
+
+    reversible do |dir|
+      dir.up do
+        execute <<-SQL
+          SELECT create_hypertable('events', 'event_time');
+        SQL
+      end
     end
   end
 end

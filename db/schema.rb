@@ -16,11 +16,11 @@ ActiveRecord::Schema.define(version: 20180405121257) do
   enable_extension "plpgsql"
   enable_extension "timescaledb"
 
-  create_table "events", force: :cascade do |t|
-    t.bigint "event_id"
+  create_table "events", primary_key: ["event_id", "event_source", "event_time"], force: :cascade do |t|
+    t.bigint "event_id", null: false
     t.string "event_type"
-    t.string "event_source"
-    t.datetime "event_time"
+    t.string "event_source", null: false
+    t.datetime "event_time", null: false
     t.datetime "event_created_at"
     t.bigint "project_id"
     t.bigint "workflow_id"
@@ -43,6 +43,9 @@ ActiveRecord::Schema.define(version: 20180405121257) do
     t.string "tags", default: [], array: true
     t.bigint "user_zooniverse_id"
     t.bigint "zooniverse_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_time"], name: "events_event_time_idx", order: { event_time: :desc }
   end
 
 end
